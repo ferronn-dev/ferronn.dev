@@ -124,3 +124,8 @@ resource "google_project_iam_policy" "project" {
   project     = local.project
   policy_data = data.google_iam_policy.project.policy_data
 }
+
+resource "google_project_default_service_accounts" "project" {
+  project = local.project
+  action  = "DISABLE"
+}
