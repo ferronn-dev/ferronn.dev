@@ -1,3 +1,12 @@
+terraform {
+  cloud {
+    organization = "ferronn-dev"
+    workspaces {
+      name = "www"
+    }
+  }
+}
+
 locals {
   project = "www-ferronn-dev"
   region  = "us-central1"
@@ -8,6 +17,11 @@ provider "google" {
   project = local.project
   region  = local.region
   zone    = local.zone
+}
+
+resource "google_service_account" "terraform" {
+  account_id   = "terraform"
+  display_name = "terraform"
 }
 
 resource "google_storage_bucket" "static" {
@@ -114,9 +128,27 @@ resource "google_cloud_run_service_iam_policy" "nginx" {
 data "google_iam_policy" "project" {
   binding {
     members = [
+      "serviceAccount:${google_service_account.terraform.email}",
+    ]
+    role = "roles/editor"
+  }
+  binding {
+    members = [
+      "serviceAccount:${google_service_account.terraform.email}",
+    ]
+    role = "roles/iam.securityAdmin"
+  }
+  binding {
+    members = [
       "serviceAccount:service-715563492971@serverless-robot-prod.iam.gserviceaccount.com",
     ]
     role = "roles/run.serviceAgent"
+  }
+  binding {
+    members = [
+      "serviceAccount:${google_service_account.terraform.email}",
+    ]
+    role = "roles/storage.admin"
   }
 }
 
