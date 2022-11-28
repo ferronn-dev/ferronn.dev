@@ -110,15 +110,39 @@ resource "google_cloud_run_service_iam_policy" "nginx" {
 data "google_iam_policy" "project" {
   binding {
     members = [
+      "serviceAccount:715563492971@cloudbuild.gserviceaccount.com",
+    ]
+    role = "roles/cloudbuild.builds.builder"
+  }
+  binding {
+    members = [
+      "serviceAccount:service-715563492971@gcp-sa-cloudbuild.iam.gserviceaccount.com",
+    ]
+    role = "roles/cloudbuild.serviceAgent"
+  }
+  binding {
+    members = [
       "serviceAccount:${google_service_account.terraform.email}",
     ]
     role = "roles/editor"
   }
   binding {
     members = [
+      "serviceAccount:715563492971@cloudbuild.gserviceaccount.com",
+    ]
+    role = "roles/iam.serviceAccountUser"
+  }
+  binding {
+    members = [
       "serviceAccount:${google_service_account.terraform.email}",
     ]
     role = "roles/iam.securityAdmin"
+  }
+  binding {
+    members = [
+      "serviceAccount:715563492971@cloudbuild.gserviceaccount.com",
+    ]
+    role = "roles/run.admin"
   }
   binding {
     members = [
