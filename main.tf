@@ -64,3 +64,14 @@ resource "google_cloud_run_service" "nginx" {
     }
   }
 }
+
+resource "google_cloud_run_domain_mapping" "nginx" {
+  name     = "ferronn.dev"
+  location = "us-central1"
+  metadata {
+    namespace = "www-ferronn-dev"
+  }
+  spec {
+    route_name = google_cloud_run_service.nginx.name
+  }
+}
