@@ -94,56 +94,7 @@ resource "google_cloud_run_service_iam_policy" "nginx" {
   service     = google_cloud_run_service.nginx.name
 }
 
-data "google_iam_policy" "project" {
-  binding {
-    members = [
-      "serviceAccount:715563492971@cloudbuild.gserviceaccount.com",
-    ]
-    role = "roles/cloudbuild.builds.builder"
-  }
-  binding {
-    members = [
-      "serviceAccount:service-715563492971@gcp-sa-cloudbuild.iam.gserviceaccount.com",
-    ]
-    role = "roles/cloudbuild.serviceAgent"
-  }
-  binding {
-    members = [
-      "serviceAccount:service-715563492971@gcf-admin-robot.iam.gserviceaccount.com",
-    ]
-    role = "roles/cloudfunctions.serviceAgent"
-  }
-  binding {
-    members = [
-      "serviceAccount:service-715563492971@gcp-sa-cloudscheduler.iam.gserviceaccount.com",
-    ]
-    role = "roles/cloudscheduler.serviceAgent"
-  }
-  binding {
-    members = [
-      "serviceAccount:service-715563492971@compute-system.iam.gserviceaccount.com",
-    ]
-    role = "roles/compute.serviceAgent"
-  }
-  binding {
-    members = [
-      "serviceAccount:service-715563492971@containerregistry.iam.gserviceaccount.com",
-    ]
-    role = "roles/containerregistry.ServiceAgent"
-  }
-  binding {
-    members = [
-      "serviceAccount:715563492971@cloudservices.gserviceaccount.com",
-    ]
-    role = "roles/editor"
-  }
-  binding {
-    members = [
-      "serviceAccount:service-715563492971@serverless-robot-prod.iam.gserviceaccount.com",
-    ]
-    role = "roles/run.serviceAgent"
-  }
-}
+data "google_iam_policy" "project" {}
 
 resource "google_project_iam_policy" "project" {
   project     = local.project
