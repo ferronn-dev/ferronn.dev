@@ -32,6 +32,11 @@ data "google_container_registry_image" "nginx" {
   name = "nginx"
 }
 
+resource "google_service_account" "nginx-runner" {
+  account_id   = "nginx-runner"
+  display_name = "nginx-runner"
+}
+
 resource "google_cloud_run_service" "nginx" {
   name     = "nginx"
   location = local.region
@@ -50,6 +55,7 @@ resource "google_cloud_run_service" "nginx" {
     }
     spec {
       container_concurrency = 80
+      service_account_name  = google_service_account.nginx-runner.email
       timeout_seconds       = 300
       containers {
         args    = []
@@ -94,7 +100,14 @@ resource "google_cloud_run_service_iam_policy" "nginx" {
   service     = google_cloud_run_service.nginx.name
 }
 
-data "google_iam_policy" "project" {}
+data "google_iam_policy" "project" {
+  binding {
+    members = [
+      "serviceAccount:service-715563492971@serverless-robot-prod.iam.gserviceaccount.com",
+    ]
+    role = "roles/run.serviceAgent"
+  }
+}
 
 resource "google_project_iam_policy" "project" {
   project     = local.project
