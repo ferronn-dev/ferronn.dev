@@ -4,6 +4,24 @@ provider "google" {
   zone    = "us-central1-c"
 }
 
+resource "google_storage_bucket" "static" {
+  name                        = "static.ferronn.dev"
+  location                    = "US"
+  uniform_bucket_level_access = true
+}
+
+data "google_iam_policy" "storage-static" {
+  binding {
+    role    = "roles/storage.objectViewer"
+    members = ["allUsers"]
+  }
+}
+
+resource "google_storage_bucket_iam_policy" "static" {
+  bucket      = google_storage_bucket.static.name
+  policy_data = data.google_iam_policy.storage-static.policy_data
+}
+
 resource "google_cloud_run_service" "nginx" {
   name     = "nginx"
   location = "us-central1"
