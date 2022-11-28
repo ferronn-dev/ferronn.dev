@@ -49,15 +49,17 @@ resource "google_cloud_run_service" "nginx" {
   location = local.region
   lifecycle {
     ignore_changes = [
+      template[0].metadata[0].annotations["client.knative.dev/user-image"],
       template[0].metadata[0].annotations["run.googleapis.com/client-name"],
       template[0].metadata[0].annotations["run.googleapis.com/client-version"],
+      template[0].metadata[0].labels,
+      template[0].spec[0].containers[0].image,
     ]
   }
   template {
     metadata {
       annotations = {
         "autoscaling.knative.dev/maxScale" = "100"
-        "client.knative.dev/user-image"    = data.google_container_registry_image.nginx.image_url
       }
     }
     spec {
