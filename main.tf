@@ -82,6 +82,18 @@ resource "google_cloud_run_domain_mapping" "nginx" {
   }
 }
 
+data "google_iam_policy" "run-nginx" {
+  binding {
+    role    = "roles/run.invoker"
+    members = ["allUsers"]
+  }
+}
+
+resource "google_cloud_run_service_iam_policy" "nginx" {
+  policy_data = data.google_iam_policy.run-nginx.policy_data
+  service     = google_cloud_run_service.nginx.name
+}
+
 data "google_iam_policy" "project" {
   binding {
     members = [
