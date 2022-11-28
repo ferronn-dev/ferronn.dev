@@ -22,17 +22,24 @@ resource "google_storage_bucket_iam_policy" "static" {
   policy_data = data.google_iam_policy.storage-static.policy_data
 }
 
+data "google_container_registry_image" "nginx" {
+  name = "nginx"
+}
+
 resource "google_cloud_run_service" "nginx" {
   name     = "nginx"
   location = "us-central1"
+  lifecycle {
+    ignore_changes = [
+      template[0].metadata[0].annotations["run.googleapis.com/client-name"],
+      template[0].metadata[0].annotations["run.googleapis.com/client-version"],
+    ]
+  }
   template {
     metadata {
       annotations = {
-        "autoscaling.knative.dev/maxScale"  = "100"
-        "client.knative.dev/user-image"     = "gcr.io/www-ferronn-dev/nginx"
-        "run.googleapis.com/client-name"    = "gcloud"
-        "run.googleapis.com/client-version" = "321.0.0"
-        "run.googleapis.com/sandbox"        = "gvisor"
+        "autoscaling.knative.dev/maxScale" = "100"
+        "client.knative.dev/user-image"    = data.google_container_registry_image.nginx.image_url
       }
     }
     spec {
@@ -41,7 +48,7 @@ resource "google_cloud_run_service" "nginx" {
       containers {
         args    = []
         command = []
-        image   = "gcr.io/www-ferronn-dev/nginx"
+        image   = data.google_container_registry_image.nginx.image_url
         ports {
           container_port = 8080
           name           = "http1"
