@@ -28,6 +28,17 @@ resource "google_storage_bucket_iam_policy" "static" {
   policy_data = data.google_iam_policy.storage-static.policy_data
 }
 
+resource "google_container_registry" "registry" {
+  project = local.project
+}
+
+data "google_iam_policy" "registry" {}
+
+resource "google_storage_bucket_iam_policy" "registry" {
+  bucket      = google_container_registry.registry.id
+  policy_data = data.google_iam_policy.registry.policy_data
+}
+
 data "google_container_registry_image" "nginx" {
   name = "nginx"
 }
